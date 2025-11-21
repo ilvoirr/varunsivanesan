@@ -1261,7 +1261,7 @@ const ShootingStarsPageMobile = () => {
                 </BlurFade>
                 <BlurFade delay={0.5}>
                     <p className="text-base md:text-lg text-neutral-400 leading-relaxed">
-                        I like to do things only when they can be done perfectly which helps me build a strong set of fundamentals regarding everything we interact with.
+                        I like to do things, only when they can be done perfectly to build strong fundamentals.
                     </p>
                 </BlurFade>
             </div>
