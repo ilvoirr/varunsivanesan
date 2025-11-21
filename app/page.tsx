@@ -899,7 +899,7 @@ const ShootingStarsPageDesktop = () => {
                 <BlurFade delay={0.4} className="relative">
                    <CometCard className="relative h-72 w-72 md:h-96 md:w-[30rem] rounded-[2.5rem]">
                        <PixelImage 
-                          src="/varun3.jpg"
+                          src="/varun1.jpg"
                           customGrid={{ rows: 4, cols: 6 }}
                           grayscaleAnimation={true}
                           className="w-full h-full rounded-[2.5rem]"
@@ -1269,7 +1269,7 @@ const ShootingStarsPageMobile = () => {
                 <BlurFade delay={0.4} className="relative">
                    <CometCard className="relative h-72 w-72 md:h-96 md:w-[30rem] rounded-[2.5rem]">
                        <PixelImage 
-                          src="/varun3.jpg"
+                          src="/varun1.jpg"
                           customGrid={{ rows: 4, cols: 6 }}
                           grayscaleAnimation={true}
                           className="w-full h-full rounded-[2.5rem]"
