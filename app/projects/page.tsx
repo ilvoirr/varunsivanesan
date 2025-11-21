@@ -23,90 +23,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Modified: Only renders Desktop version now
 export const FloatingDock = ({
   items,
   desktopClassName,
-  mobileClassName,
   onHomeClick,
 }: {
   items: { title: string; icon: React.ReactNode; href: string }[];
   desktopClassName?: string;
-  mobileClassName?: string;
   onHomeClick?: () => void;
 }) => {
   return (
-    <>
-      <FloatingDockDesktop items={items} className={desktopClassName} onHomeClick={onHomeClick} />
-      <FloatingDockMobile items={items} className={mobileClassName} onHomeClick={onHomeClick} />
-    </>
-  );
-};
-
-const FloatingDockMobile = ({
-  items,
-  className,
-  onHomeClick,
-}: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
-  className?: string;
-  onHomeClick?: () => void;
-}) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className={cn("relative block md:hidden", className)}>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            layoutId="nav"
-            className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2"
-          >
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
-                }}
-                transition={{ delay: (items.length - 1 - idx) * 0.05 }}
-              >
-                <a
-                  href={item.href}
-                  key={item.title}
-                  target={item.href.startsWith("http") ? "_blank" : undefined}
-                  rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  onClick={(e) => {
-                    if (item.href === "#") {
-                      e.preventDefault();
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    } else if (item.href === "/" && onHomeClick) {
-                      e.preventDefault();
-                      onHomeClick();
-                    }
-                  }}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
-                >
-                  <div className="h-4 w-4">{item.icon}</div>
-                </a>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-neutral-500 dark:text-neutral-400"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg>
-      </button>
-    </div>
+    <FloatingDockDesktop items={items} className={desktopClassName} onHomeClick={onHomeClick} />
   );
 };
 
@@ -313,11 +241,11 @@ const CometCard = ({ className, children }: { className?: string; children: Reac
 export default function ProjectsPage() {
   const router = useRouter();
   const [isExiting, setIsExiting] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for Mobile Sidebar
 
   // Logic to trigger the exit animation then push route
   const handleHomeClick = () => {
     setIsExiting(true);
-    // Wait for animation (600ms) before pushing route
     setTimeout(() => {
       router.push("/");
     }, 600);
@@ -336,8 +264,9 @@ export default function ProjectsPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-12 lg:py-24 lg:px-36 pb-24">
-      {/* White Transition Overlay with Text */}
+    <main className="min-h-screen bg-black text-white p-6 md:p-12 lg:py-24 lg:px-36 pb-24 relative">
+      
+      {/* White Transition Overlay */}
       <AnimatePresence>
         {isExiting && (
           <motion.div
@@ -353,10 +282,71 @@ export default function ProjectsPage() {
         )}
       </AnimatePresence>
 
-      {/* Page Header */}
-      <div className="max-w-6xl mx-auto mb-20 border-b border-white/10 pb-10">
+      {/* HAMBURGER MENU BUTTON (Mobile Only) */}
+      <button 
+        onClick={() => setIsSidebarOpen(true)}
+        className="md:hidden fixed top-6 right-6 z-[60] p-2 text-white hover:opacity-80 active:scale-95 transition-all"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="3" x2="21" y1="6" y2="6" />
+          <line x1="3" x2="21" y1="12" y2="12" />
+          <line x1="3" x2="21" y1="18" y2="18" />
+        </svg>
+      </button>
+
+      {/* SIDEBAR DRAWER (Mobile Only) */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSidebarOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70]"
+            />
+            
+            {/* Drawer Content */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 20, stiffness: 100 }}
+              className="fixed top-0 right-0 h-full w-64 bg-zinc-950/90 border-l border-white/10 backdrop-blur-xl z-[80] p-6 shadow-2xl"
+            >
+              <div className="flex flex-col gap-6 mt-12">
+                {dockItems.map((item, idx) => (
+                   <a 
+                     key={item.title} 
+                     href={item.href}
+                     onClick={(e) => {
+                        if (item.href === "/" && handleHomeClick) { 
+                            e.preventDefault(); 
+                            handleHomeClick(); 
+                        }
+                        setIsSidebarOpen(false);
+                     }}
+                     target={item.href.startsWith("http") ? "_blank" : undefined}
+                     rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                     className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 text-neutral-300 hover:text-white transition-all group"
+                   >
+                     <div className="p-2 rounded-lg bg-neutral-900 border border-white/5 group-hover:border-white/20 transition-colors">
+                       {React.cloneElement(item.icon as any, { className: "w-5 h-5" })}
+                     </div>
+                     <span className="font-medium">{item.title}</span>
+                   </a>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Page Header - MODIFIED for negligible Mobile Gap */}
+      <div className="max-w-6xl mx-auto mb-10 md:mb-20 border-b border-white/10 pb-8 md:pb-10">
         <BlurFade delay={0.1}>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white mb-6">
+          <h1 className="text-4xl md:text-7xl font-bold tracking-tighter text-white mb-6">
             Selected Works<span className="text-pink-500">.</span>
           </h1>
           <p className="text-lg text-zinc-400 max-w-2xl font-light leading-relaxed">
@@ -461,8 +451,8 @@ export default function ProjectsPage() {
         ))}
       </div>
 
-      {/* Floating Dock Fixed at Bottom */}
-      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50">
+      {/* Floating Dock Fixed at Bottom - HIDDEN ON MOBILE (md:flex) */}
+      <div className="hidden md:flex fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50">
         <FloatingDock 
           items={dockItems} 
           desktopClassName="bg-zinc-900/80 border border-zinc-800 backdrop-blur-md"
