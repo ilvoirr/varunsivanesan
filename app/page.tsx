@@ -725,7 +725,7 @@ const ShootingStarsPageDesktop = () => {
     "Pandas", "NumPy", "Hugging Face", "LangChain", "CI/CD", "Webhooks", "Scraping"
   ];
   const softSkills = [
-    "Team Leadership", "Project Management", "Technical Writing", "Mentoring", "Professional Communication"
+    "Team Leadership", "Project Management", "Technical Writing", "Mentoring", "Professional Communication", "Works Better under Pressure", "Very Quick", " Adaptable"
   ];
 
   const SkillBadge = ({ name }: { name: string }) => (
