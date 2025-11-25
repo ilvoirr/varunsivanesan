@@ -141,16 +141,15 @@ const BlurFade = ({ delay, children, className }: { delay: number; children: Rea
   </div>
 );
 
-/* --- FLOATING DOCK (Shared - Kept for Desktop) --- */
-export const FloatingDock = ({ items, desktopClassName, mobileClassName, onHomeClick }: any) => (
+/* --- FLOATING DOCK (Shared) --- */
+export const FloatingDock = ({ items, desktopClassName, mobileClassName, onNavigate }: any) => (
   <>
-    <FloatingDockDesktop items={items} className={desktopClassName} onHomeClick={onHomeClick} />
-    {/* Mobile Dock Logic Removed from here in usage, but component kept for safety */}
-    <FloatingDockMobile items={items} className={mobileClassName} onHomeClick={onHomeClick} />
+    <FloatingDockDesktop items={items} className={desktopClassName} onNavigate={onNavigate} />
+    <FloatingDockMobile items={items} className={mobileClassName} onNavigate={onNavigate} />
   </>
 );
 
-const FloatingDockMobile = ({ items, className, onHomeClick }: any) => {
+const FloatingDockMobile = ({ items, className, onNavigate }: any) => {
   const [open, setOpen] = useState(false);
   return (
     <div className={cn("relative block md:hidden", className)}>
@@ -169,8 +168,14 @@ const FloatingDockMobile = ({ items, className, onHomeClick }: any) => {
                   href={item.href}
                   target={item.href.startsWith("http") ? "_blank" : undefined}
                   onClick={(e) => {
-                    if (item.href === "#") { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }
-                    else if (item.href === "/" && onHomeClick) { e.preventDefault(); onHomeClick(); }
+                    if ((item.href === "/" || item.href === "/projects") && onNavigate) {
+                        e.preventDefault();
+                        onNavigate(item.href);
+                    }
+                    else if (item.href === "#") { 
+                        e.preventDefault(); 
+                        window.scrollTo({ top: 0, behavior: "smooth" }); 
+                    }
                   }}
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
                 >
@@ -188,7 +193,7 @@ const FloatingDockMobile = ({ items, className, onHomeClick }: any) => {
   );
 };
 
-const FloatingDockDesktop = ({ items, className, onHomeClick }: any) => {
+const FloatingDockDesktop = ({ items, className, onNavigate }: any) => {
   let mouseX = useMotionValue(Infinity);
   return (
     <motion.div
@@ -197,13 +202,13 @@ const FloatingDockDesktop = ({ items, className, onHomeClick }: any) => {
       className={cn("mx-auto hidden h-16 items-end gap-4 rounded-2xl bg-neutral-50 px-4 pb-3 md:flex dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800/50", className)}
     >
       {items.map((item: any) => (
-        <IconContainer mouseX={mouseX} key={item.title} {...item} onHomeClick={onHomeClick} />
+        <IconContainer mouseX={mouseX} key={item.title} {...item} onNavigate={onNavigate} />
       ))}
     </motion.div>
   );
 };
 
-function IconContainer({ mouseX, title, icon, href, onHomeClick }: any) {
+function IconContainer({ mouseX, title, icon, href, onNavigate }: any) {
   let ref = useRef<HTMLDivElement>(null);
   let distance = useTransform(mouseX, (val: number) => {
     let bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
@@ -226,8 +231,14 @@ function IconContainer({ mouseX, title, icon, href, onHomeClick }: any) {
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
       onClick={(e) => {
-        if (href === "#") { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); } 
-        else if (href === "/" && onHomeClick) { e.preventDefault(); onHomeClick(); }
+        if ((href === "/" || href === "/projects") && onNavigate) {
+            e.preventDefault();
+            onNavigate(href);
+        }
+        else if (href === "#") { 
+            e.preventDefault(); 
+            window.scrollTo({ top: 0, behavior: "smooth" }); 
+        } 
       }}
     >
       <motion.div
@@ -263,13 +274,20 @@ function IconContainer({ mouseX, title, icon, href, onHomeClick }: any) {
 
 const NotesPageDesktop = () => {
   const [isExiting, setIsExiting] = useState(false);
+  const [exitDuration, setExitDuration] = useState(0.6); // Default Speed
   const [selectedNote, setSelectedNote] = useState<typeof NOTES_DATA[0] | null>(null);
 
-  const handleHomeClick = () => {
+  // Unified Handler with Dynamic Speed
+  const handleNavigation = (path: string) => {
+    // Logic: If going to Projects (Sibling), fast. If Home, slow.
+    const isSibling = path === "/projects";
+    const duration = isSibling ? 0.1 : 0.6;
+
+    setExitDuration(duration);
     setIsExiting(true);
     setTimeout(() => {
-      window.location.href = "/"; 
-    }, 600);
+      window.location.href = path; 
+    }, duration * 1000); 
   };
 
   useEffect(() => {
@@ -291,13 +309,27 @@ const NotesPageDesktop = () => {
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-12 lg:py-24 lg:px-36 pb-24 relative">
-      {/* White Transition Overlay */}
+      
+      {/* 1. ENTRY CURTAIN (Fast Up on Load) */}
+      <motion.div
+        initial={{ y: "0%" }}
+        animate={{ y: "-100%" }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed inset-0 z-[100] bg-white flex items-center justify-center pointer-events-none"
+      >
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-neutral-900 font-sans">
+            Varun Sivanesan
+        </h1>
+      </motion.div>
+
+      {/* 2. EXIT CURTAIN (Conditional Speed Up from Bottom) */}
       <AnimatePresence>
         {isExiting && (
           <motion.div
             initial={{ y: "100%" }}
             animate={{ y: "0%" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ y: "100%" }}
+            transition={{ duration: exitDuration, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[9999] bg-white flex items-center justify-center"
           >
              <h1 className="relative z-10 text-4xl md:text-6xl font-bold tracking-tighter text-neutral-900 font-sans">
@@ -319,7 +351,7 @@ const NotesPageDesktop = () => {
         </BlurFade>
       </div>
 
-      {/* Notes Grid - DESKTOP VERSION REMAINS UNTOUCHED */}
+      {/* Notes Grid */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {NOTES_DATA.map((note, index) => (
           <BlurFade key={note.id} delay={0.2 + index * 0.1}>
@@ -424,7 +456,7 @@ const NotesPageDesktop = () => {
         <FloatingDock 
           items={dockItems} 
           desktopClassName="bg-zinc-900/80 border border-zinc-800 backdrop-blur-md"
-          onHomeClick={handleHomeClick} 
+          onNavigate={handleNavigation} 
         />
       </div>
     </main>
@@ -437,15 +469,23 @@ const NotesPageDesktop = () => {
 
 const NotesPageMobile = () => {
   const [isExiting, setIsExiting] = useState(false);
+  const [exitDuration, setExitDuration] = useState(0.6); // Default Speed
   const [selectedNote, setSelectedNote] = useState<typeof NOTES_DATA[0] | null>(null);
-  // Sidebar State for Mobile
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const handleHomeClick = () => {
+  // Unified Handler with Dynamic Speed
+  const handleNavigation = (path: string) => {
+    setIsSidebarOpen(false); 
+
+    // Logic: If going to Projects (Sibling), fast. If Home, slow.
+    const isSibling = path === "/projects";
+    const duration = isSibling ? 0.2 : 0.6;
+
+    setExitDuration(duration);
     setIsExiting(true);
     setTimeout(() => {
-      window.location.href = "/"; 
-    }, 600);
+      window.location.href = path; 
+    }, duration * 1000); 
   };
 
   useEffect(() => {
@@ -468,13 +508,26 @@ const NotesPageMobile = () => {
   return (
     <main className="min-h-screen bg-black text-white p-6 pb-8 relative">
       
-      {/* White Transition Overlay */}
+      {/* 1. ENTRY CURTAIN (Fast Up on Load) */}
+      <motion.div
+        initial={{ y: "0%" }}
+        animate={{ y: "-100%" }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed inset-0 z-[100] bg-white flex items-center justify-center pointer-events-none"
+      >
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-neutral-900 font-sans">
+            Varun Sivanesan
+        </h1>
+      </motion.div>
+
+      {/* 2. EXIT CURTAIN (Conditional Speed Up from Bottom) */}
       <AnimatePresence>
         {isExiting && (
           <motion.div
             initial={{ y: "100%" }}
             animate={{ y: "0%" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ y: "100%" }}
+            transition={{ duration: exitDuration, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[9999] bg-white flex items-center justify-center"
           >
              <h1 className="relative z-10 text-4xl md:text-6xl font-bold tracking-tighter text-neutral-900 font-sans">
@@ -484,7 +537,7 @@ const NotesPageMobile = () => {
         )}
       </AnimatePresence>
 
-      {/* HAMBURGER MENU BUTTON (Top Right) */}
+      {/* HAMBURGER MENU BUTTON */}
       <button 
         onClick={() => setIsSidebarOpen(true)}
         className="fixed top-6 right-6 z-[60] p-2 text-white hover:opacity-80 active:scale-95 transition-all"
@@ -500,7 +553,6 @@ const NotesPageMobile = () => {
       <AnimatePresence>
         {isSidebarOpen && (
           <>
-            {/* Backdrop */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -509,7 +561,6 @@ const NotesPageMobile = () => {
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70]"
             />
             
-            {/* Drawer Content */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
@@ -523,8 +574,13 @@ const NotesPageMobile = () => {
                      key={item.title} 
                      href={item.href}
                      onClick={(e) => {
-                        if (item.href === "/" && handleHomeClick) { e.preventDefault(); handleHomeClick(); }
-                        setIsSidebarOpen(false);
+                        // Intercept navigation
+                        if ((item.href === "/" || item.href === "/projects") && handleNavigation) { 
+                            e.preventDefault(); 
+                            handleNavigation(item.href); 
+                        } else {
+                            setIsSidebarOpen(false);
+                        }
                      }}
                      target={item.href.startsWith("http") ? "_blank" : undefined}
                      rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
@@ -542,7 +598,7 @@ const NotesPageMobile = () => {
         )}
       </AnimatePresence>
 
-      {/* Page Header - Compact for Mobile */}
+      {/* Page Header */}
       <div className="mb-8 border-b border-white/10 pb-6">
         <BlurFade delay={0.1}>
           <h1 className="text-4xl font-bold tracking-tighter text-white mb-3">
@@ -554,7 +610,7 @@ const NotesPageMobile = () => {
         </BlurFade>
       </div>
 
-      {/* Notes Grid - Mobile Optimized */}
+      {/* Notes Grid */}
       <div className="grid grid-cols-1 gap-4">
         {NOTES_DATA.map((note, index) => (
           <BlurFade key={note.id} delay={0.1 + index * 0.05}>
@@ -562,10 +618,7 @@ const NotesPageMobile = () => {
               onClick={() => setSelectedNote(note)}
               className="group cursor-pointer"
             >
-              {/* Compact Card for Mobile */}
               <div className="bg-zinc-900 rounded-xl border border-white/10 overflow-hidden flex flex-col transition-all duration-300 active:scale-[0.98]">
-                
-                {/* Shorter Cover Image - Reduced Height */}
                 <div className={`h-20 w-full bg-gradient-to-br ${note.color} flex items-center justify-center relative overflow-hidden`}>
                     <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
                     <div className="text-white/50 transform scale-110">
@@ -576,7 +629,6 @@ const NotesPageMobile = () => {
                     </div>
                 </div>
                 
-                {/* Compact Content Content - Reduced Padding & Margins */}
                 <div className="p-3">
                   <div className="mb-1">
                     <p className="text-[9px] font-medium text-pink-500 mb-0.5 tracking-widest uppercase">
@@ -600,7 +652,7 @@ const NotesPageMobile = () => {
         ))}
       </div>
 
-      {/* PDF Side Panel Viewer - Fullscreen for Mobile */}
+      {/* PDF Side Panel Viewer */}
       <AnimatePresence>
         {selectedNote && (
           <>

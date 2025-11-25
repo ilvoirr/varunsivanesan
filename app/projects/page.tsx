@@ -23,29 +23,28 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Modified: Only renders Desktop version now
 export const FloatingDock = ({
   items,
   desktopClassName,
-  onHomeClick,
+  onNavigate,
 }: {
   items: { title: string; icon: React.ReactNode; href: string }[];
   desktopClassName?: string;
-  onHomeClick?: () => void;
+  onNavigate?: (path: string) => void;
 }) => {
   return (
-    <FloatingDockDesktop items={items} className={desktopClassName} onHomeClick={onHomeClick} />
+    <FloatingDockDesktop items={items} className={desktopClassName} onNavigate={onNavigate} />
   );
 };
 
 const FloatingDockDesktop = ({
   items,
   className,
-  onHomeClick,
+  onNavigate,
 }: {
   items: { title: string; icon: React.ReactNode; href: string }[];
   className?: string;
-  onHomeClick?: () => void;
+  onNavigate?: (path: string) => void;
 }) => {
   let mouseX = useMotionValue(Infinity);
   return (
@@ -58,7 +57,7 @@ const FloatingDockDesktop = ({
       )}
     >
       {items.map((item) => (
-        <IconContainer mouseX={mouseX} key={item.title} {...item} onHomeClick={onHomeClick} />
+        <IconContainer mouseX={mouseX} key={item.title} {...item} onNavigate={onNavigate} />
       ))}
     </motion.div>
   );
@@ -69,13 +68,13 @@ function IconContainer({
   title,
   icon,
   href,
-  onHomeClick,
+  onNavigate,
 }: {
   mouseX: MotionValue;
   title: string;
   icon: React.ReactNode;
   href: string;
-  onHomeClick?: () => void;
+  onNavigate?: (path: string) => void;
 }) {
   let ref = useRef<HTMLDivElement>(null);
 
@@ -105,12 +104,14 @@ function IconContainer({
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
       onClick={(e) => {
-        if (href === "#") {
+        // Intercept navigation for transitions
+        if ((href === "/" || href === "/notes") && onNavigate) {
+            e.preventDefault();
+            onNavigate(href);
+        }
+        else if (href === "#") {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
-        } else if (href === "/" && onHomeClick) {
-            e.preventDefault();
-            onHomeClick();
         }
       }}
     >
@@ -241,14 +242,23 @@ const CometCard = ({ className, children }: { className?: string; children: Reac
 export default function ProjectsPage() {
   const router = useRouter();
   const [isExiting, setIsExiting] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for Mobile Sidebar
+  const [exitDuration, setExitDuration] = useState(0.6); // Default speed
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Logic to trigger the exit animation then push route
-  const handleHomeClick = () => {
+  // Unified Handler with Dynamic Speed
+  const handleNavigation = (path: string) => {
+    setIsSidebarOpen(false);
+    
+    // Logic: If going to Notes (Sibling), fast. If Home, slow.
+    const isSibling = path === "/notes";
+    const duration = isSibling ? 0.1 : 0.6; 
+
+    setExitDuration(duration);
     setIsExiting(true);
+
     setTimeout(() => {
-      router.push("/");
-    }, 600);
+      router.push(path);
+    }, duration * 1000); 
   };
 
  const dockItems = [
@@ -266,13 +276,26 @@ export default function ProjectsPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-12 lg:py-24 lg:px-36 pb-24 relative">
       
-      {/* White Transition Overlay */}
+      {/* 1. ENTRY CURTAIN (Fast Up on Load) */}
+      <motion.div
+        initial={{ y: "0%" }}
+        animate={{ y: "-100%" }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed inset-0 z-[100] bg-white flex items-center justify-center pointer-events-none"
+      >
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-neutral-900 font-sans">
+            Varun Sivanesan
+        </h1>
+      </motion.div>
+
+      {/* 2. EXIT CURTAIN (Conditional Speed Up from Bottom) */}
       <AnimatePresence>
         {isExiting && (
           <motion.div
             initial={{ y: "100%" }}
             animate={{ y: "0%" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ y: "100%" }}
+            transition={{ duration: exitDuration, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[9999] bg-white flex items-center justify-center"
           >
            <h1 className="relative z-10 text-4xl md:text-6xl font-bold tracking-tighter text-neutral-900 font-sans">
@@ -321,11 +344,12 @@ export default function ProjectsPage() {
                      key={item.title} 
                      href={item.href}
                      onClick={(e) => {
-                        if (item.href === "/" && handleHomeClick) { 
+                        if ((item.href === "/" || item.href === "/notes") && handleNavigation) { 
                             e.preventDefault(); 
-                            handleHomeClick(); 
+                            handleNavigation(item.href); 
+                        } else {
+                            setIsSidebarOpen(false);
                         }
-                        setIsSidebarOpen(false);
                      }}
                      target={item.href.startsWith("http") ? "_blank" : undefined}
                      rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
@@ -343,7 +367,7 @@ export default function ProjectsPage() {
         )}
       </AnimatePresence>
 
-      {/* Page Header - MODIFIED for negligible Mobile Gap */}
+      {/* Page Header */}
       <div className="max-w-6xl mx-auto mb-10 md:mb-20 border-b border-white/10 pb-8 md:pb-10">
         <BlurFade delay={0.1}>
           <h1 className="text-4xl md:text-7xl font-bold tracking-tighter text-white mb-6">
@@ -364,17 +388,12 @@ export default function ProjectsPage() {
               {/* 1. Image Section (Left) */}
               <div className="w-full md:w-3/5 relative">
                   <CometCard className="rounded-xl overflow-hidden aspect-video border border-white/10 transition-all duration-500">
-                    {/* Image */}
                     <img
                       src={project.image}
                       alt={project.title}
                       className="w-full h-full object-cover" 
                     />
-                    
-                    {/* Interactive Overlay with Buttons */}
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center gap-4">
-                        
-                        {/* Live Demo Button */}
                         {project.liveLink && (
                             <Link
                             href={project.liveLink}
@@ -385,8 +404,6 @@ export default function ProjectsPage() {
                             <Globe size={15} /> Demo
                             </Link>
                         )}
-
-                        {/* GitHub Code Button */}
                         <Link
                             href={project.githubLink}
                             target="_blank"
@@ -395,15 +412,12 @@ export default function ProjectsPage() {
                         >
                             <Github size={15} /> Code
                         </Link>
-
                     </div>
                   </CometCard>
               </div>
 
               {/* 2. Content Section (Right) */}
               <div className="w-full md:w-2/5 flex flex-col pt-2">
-                
-                {/* Tech Stack Pills */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tech.map((t) => (
                     <span key={t} className="text-[10px] uppercase tracking-widest text-zinc-500 border border-zinc-800 px-2 py-1 rounded-md">
@@ -411,18 +425,12 @@ export default function ProjectsPage() {
                     </span>
                   ))}
                 </div>
-
-                {/* Title */}
                 <h2 className="text-3xl font-bold text-white mb-4 tracking-tight group-hover:text-pink-500 transition-colors duration-300">
                   {project.title}
                 </h2>
-
-                {/* Description */}
                 <p className="text-zinc-400 leading-relaxed mb-8 text-sm font-light">
                   {project.description}
                 </p>
-
-                {/* Text Links */}
                 <div className="flex items-center gap-4 mt-auto opacity-40 group-hover:opacity-100 transition-opacity duration-500">
                   {project.liveLink && (
                     <Link
@@ -434,7 +442,6 @@ export default function ProjectsPage() {
                       <Globe size={14} /> Live Preview
                     </Link>
                   )}
-
                   <Link
                     href={project.githubLink}
                     target="_blank"
@@ -456,7 +463,7 @@ export default function ProjectsPage() {
         <FloatingDock 
           items={dockItems} 
           desktopClassName="bg-zinc-900/80 border border-zinc-800 backdrop-blur-md"
-          onHomeClick={handleHomeClick} 
+          onNavigate={handleNavigation} 
         />
       </div>
 
