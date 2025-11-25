@@ -22,14 +22,9 @@ const ShootingStarsPageMobile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isExiting, setIsExiting] = useState(false); // State for Exit Curtain
 
-  // HANDLER FOR FAST 0.1s TRANSITION
+  // HANDLER FOR IMMEDIATE NAVIGATION
   const handleNavigation = (path: string) => {
-    setIsMenuOpen(false); // Close menu if open
-    setIsExiting(true);   // Trigger curtain
-    
-    setTimeout(() => {
-      router.push(path);
-    }, 100); // 100ms matches 0.1s animation
+    router.push(path);
   };
 
   // Intro Timer
@@ -423,7 +418,7 @@ const ShootingStarsPageMobile = () => {
             </BlurFade>
 
             {/* SECONDARY CHAMPIONS GRID */}
-            <BlurFade delay={0.4}>
+            <BlurFade delay={0.15}>
                 <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 ml-2">Also Main</h3>
                 <div className="grid grid-cols-2 gap-4">
                     

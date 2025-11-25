@@ -670,12 +670,9 @@ const ShootingStarsPageDesktop = () => {
     restDelta: 0.001
   });
 
-  // HANDLER FOR FAST 0.1s TRANSITION
+  // HANDLER FOR IMMEDIATE NAVIGATION
   const handleNavigation = (path: string) => {
-    setIsExiting(true);
-    setTimeout(() => {
-      router.push(path);
-    }, 100); // 100ms matches 0.1s animation
+    router.push(path);
   };
 
   useEffect(() => {

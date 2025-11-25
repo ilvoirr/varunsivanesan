@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-// Removed next/link and next/navigation to fix build errors in non-Next.js environments
 import { 
   FileText, 
   X, 
@@ -277,18 +276,21 @@ const NotesPageDesktop = () => {
   const [exitDuration, setExitDuration] = useState(0.6); // Default Speed
   const [selectedNote, setSelectedNote] = useState<typeof NOTES_DATA[0] | null>(null);
 
-  // Unified Handler with Dynamic Speed
-  const handleNavigation = (path: string) => {
-    // Logic: If going to Projects (Sibling), fast. If Home, slow.
-    const isSibling = path === "/projects";
-    const duration = isSibling ? 0.1 : 0.6;
+ const handleNavigation = (path: string) => {
+  // If navigating to Projects, do NOT trigger curtain, just navigate instantly
+  if (path === "/projects") {
+    window.location.href = path;
+    return;
+  }
 
-    setExitDuration(duration);
-    setIsExiting(true);
-    setTimeout(() => {
-      window.location.href = path; 
-    }, duration * 1000); 
-  };
+  // Otherwise (Home), show exit curtain
+  setExitDuration(0.6);
+  setIsExiting(true);
+  setTimeout(() => {
+    window.location.href = path;
+  }, 600);
+};
+
 
   useEffect(() => {
     if (selectedNote) { document.body.style.overflow = 'hidden'; } 
@@ -310,18 +312,6 @@ const NotesPageDesktop = () => {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-12 lg:py-24 lg:px-36 pb-24 relative">
       
-      {/* 1. ENTRY CURTAIN (Fast Up on Load) */}
-      <motion.div
-        initial={{ y: "0%" }}
-        animate={{ y: "-100%" }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed inset-0 z-[100] bg-white flex items-center justify-center pointer-events-none"
-      >
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-neutral-900 font-sans">
-            Varun Sivanesan
-        </h1>
-      </motion.div>
-
       {/* 2. EXIT CURTAIN (Conditional Speed Up from Bottom) */}
       <AnimatePresence>
         {isExiting && (
@@ -477,15 +467,18 @@ const NotesPageMobile = () => {
   const handleNavigation = (path: string) => {
     setIsSidebarOpen(false); 
 
-    // Logic: If going to Projects (Sibling), fast. If Home, slow.
-    const isSibling = path === "/projects";
-    const duration = isSibling ? 0.2 : 0.6;
+    // If navigating to Projects, do NOT trigger curtain, just navigate instantly
+    if (path === "/projects") {
+        window.location.href = path;
+        return;
+    }
 
-    setExitDuration(duration);
+    // Logic for Home (or other paths): Show curtain
+    setExitDuration(0.6);
     setIsExiting(true);
     setTimeout(() => {
       window.location.href = path; 
-    }, duration * 1000); 
+    }, 600); 
   };
 
   useEffect(() => {
@@ -508,18 +501,6 @@ const NotesPageMobile = () => {
   return (
     <main className="min-h-screen bg-black text-white p-6 pb-8 relative">
       
-      {/* 1. ENTRY CURTAIN (Fast Up on Load) */}
-      <motion.div
-        initial={{ y: "0%" }}
-        animate={{ y: "-100%" }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed inset-0 z-[100] bg-white flex items-center justify-center pointer-events-none"
-      >
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-neutral-900 font-sans">
-            Varun Sivanesan
-        </h1>
-      </motion.div>
-
       {/* 2. EXIT CURTAIN (Conditional Speed Up from Bottom) */}
       <AnimatePresence>
         {isExiting && (
@@ -652,7 +633,7 @@ const NotesPageMobile = () => {
         ))}
       </div>
 
-      {/* PDF Side Panel Viewer */}
+      {/* PDF Side Panel Viewer (FIXED FOR iOS) */}
       <AnimatePresence>
         {selectedNote && (
           <>
@@ -670,7 +651,7 @@ const NotesPageMobile = () => {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-0 bg-zinc-900 z-[70] flex flex-col"
             >
-              <div className="flex items-center justify-between p-4 border-b border-white/10 bg-zinc-900/90 backdrop-blur">
+              <div className="flex items-center justify-between p-4 border-b border-white/10 bg-zinc-900/90 backdrop-blur shrink-0 relative z-10">
                 <div className="flex-1 mr-4 overflow-hidden">
                   <h2 className="text-lg font-bold text-white truncate">{selectedNote.title}</h2>
                   <p className="text-xs text-pink-500 truncate">{selectedNote.category}</p>
@@ -692,10 +673,12 @@ const NotesPageMobile = () => {
                   </button>
                 </div>
               </div>
-              <div className="flex-1 bg-zinc-950 relative">
+
+              {/* IOS SCROLL FIX: Scroll wrapper on parent, not iframe */}
+              <div className="flex-1 bg-zinc-950 relative w-full overflow-y-auto overflow-x-hidden" style={{ WebkitOverflowScrolling: 'touch' }}>
                  <iframe 
                     src={selectedNote.file} 
-                    className="w-full h-full border-none"
+                    className="w-full h-full min-h-screen border-none block"
                     title={selectedNote.title}
                  />
                  <div className="absolute inset-0 flex flex-col items-center justify-center -z-10 text-zinc-600 gap-4">
@@ -709,8 +692,6 @@ const NotesPageMobile = () => {
           </>
         )}
       </AnimatePresence>
-
-      {/* Floating Dock Removed */}
 
     </main>
   );

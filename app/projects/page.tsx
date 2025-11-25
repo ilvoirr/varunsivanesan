@@ -250,15 +250,20 @@ export default function ProjectsPage() {
     setIsSidebarOpen(false);
     
     // Logic: If going to Notes (Sibling), fast. If Home, slow.
-    const isSibling = path === "/notes";
-    const duration = isSibling ? 0.1 : 0.6; 
+   if (path === "/notes") {
+  setIsSidebarOpen(false);
+  router.push(path);
+  return;
+}
 
-    setExitDuration(duration);
-    setIsExiting(true);
+setIsSidebarOpen(false);
+setExitDuration(0.6);
+setIsExiting(true);
 
-    setTimeout(() => {
-      router.push(path);
-    }, duration * 1000); 
+setTimeout(() => {
+  router.push(path);
+}, 600); // 0.6 * 1000
+
   };
 
  const dockItems = [
@@ -274,19 +279,9 @@ export default function ProjectsPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-12 lg:py-24 lg:px-36 pb-24 relative">
+   <main className="min-h-screen bg-black text-white p-6 md:p-12 lg:py-24 lg:px-36 pb-6 md:pb-24 relative overflow-x-hidden">
       
-      {/* 1. ENTRY CURTAIN (Fast Up on Load) */}
-      <motion.div
-        initial={{ y: "0%" }}
-        animate={{ y: "-100%" }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed inset-0 z-[100] bg-white flex items-center justify-center pointer-events-none"
-      >
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-neutral-900 font-sans">
-            Varun Sivanesan
-        </h1>
-      </motion.div>
+     
 
       {/* 2. EXIT CURTAIN (Conditional Speed Up from Bottom) */}
       <AnimatePresence>
