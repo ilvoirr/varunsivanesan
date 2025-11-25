@@ -1,6 +1,8 @@
 # 🌌 Varun Sivanesan - Portfolio
 
-![Portfolio Banner](https://socialify.git.ci/ilvoirr/portfolio/image?description=1&descriptionEditable=Full%20Stack%20Software%20Engineering%20Developer&font=Inter&language=1&name=1&owner=1&pattern=Circuit%20Board&theme=Dark)
+**Live Website:** [varunsivanesan.xyz](https://varunsivanesan.xyz)
+
+![Home Banner](./public/home-desktop.png)
 
 > A highly interactive, cosmic-themed personal portfolio and digital garden built with Next.js, Framer Motion, and Tailwind CSS.
 
@@ -29,19 +31,14 @@ The architecture is split into distinct **Desktop** and **Mobile** experiences t
 ## 📸 Gallery
 
 ### 🖥️ Desktop Experience
-| **Home Dashboard** | **Project Showcase** |
+| **Project Showcase** | **Digital Notes Library** |
 |:---:|:---:|
-| ![Home Desktop](./public/home-desktop.png) | ![Projects Page](./public/projects.png) |
+| ![Projects Page](./public/projects.png) | ![Notes Page](./public/notes.png) |
 
-### 📱 Mobile & Details
-| **Mobile View** | **Notes Library** |
+### 📱 Mobile & UI Details
+| **Mobile Experience** | **Glassmorphism Navigation** |
 |:---:|:---:|
-| <img src="./public/mobile.png" width="300" /> | ![Notes Page](./public/notes.png) |
-
-### 🎨 UI Details
-| **Glassmorphism Navigation** |
-|:---:|
-| ![Glass Bar](./public/glassbar.png) |
+| <img src="./public/mobile.png" width="300" /> | ![Glass Bar](./public/glassbar.png) |
 
 ## 📂 Project Structure
 
@@ -71,6 +68,7 @@ Based on the actual architecture of the repository:
 │   ├── mobile.png
 │   ├── notes.png
 │   ├── projects.png
+│   ├── glassbar.png
 │   ├── resume.pdf
 │   └── ... (PDFs & Images)
 └── ...
