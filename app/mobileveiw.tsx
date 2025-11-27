@@ -116,7 +116,7 @@ const ShootingStarsPageMobile = () => {
       <motion.div 
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut", delay: 1.0 }} 
+        transition={{ duration: 0.8, ease: "easeOut", delay: 1.2 }} 
         className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] w-[65vw] max-w-[280px]"
       >
         <button

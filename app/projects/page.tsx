@@ -16,7 +16,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 // ------------------------------------------------------------------
-// Utilities & Dock Components
+// Utilities & Dock Components (UNTOUCHED)
 // ------------------------------------------------------------------
 
 export function cn(...inputs: ClassValue[]) {
@@ -104,7 +104,6 @@ function IconContainer({
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
       onClick={(e) => {
-        // Intercept navigation for transitions
         if ((href === "/" || href === "/notes") && onNavigate) {
             e.preventDefault();
             onNavigate(href);
@@ -146,7 +145,7 @@ function IconContainer({
 }
 
 // ------------------------------------------------------------------
-// Project Types & Data
+// Project Types & Data (UNTOUCHED)
 // ------------------------------------------------------------------
 interface Project {
   id: number;
@@ -243,30 +242,27 @@ export default function ProjectsPage() {
   const router = useRouter();
   const [isExiting, setIsExiting] = useState(false);
   const [exitDuration, setExitDuration] = useState(0.6); // Default speed
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Unified Handler with Dynamic Speed
   const handleNavigation = (path: string) => {
-    setIsSidebarOpen(false);
+    setIsMenuOpen(false);
     
     // Logic: If going to Notes (Sibling), fast. If Home, slow.
    if (path === "/notes") {
-  setIsSidebarOpen(false);
-  router.push(path);
-  return;
-}
+      router.push(path);
+      return;
+    }
 
-setIsSidebarOpen(false);
-setExitDuration(0.6);
-setIsExiting(true);
+    setExitDuration(0.6);
+    setIsExiting(true);
 
-setTimeout(() => {
-  router.push(path);
-}, 600); // 0.6 * 1000
-
+    setTimeout(() => {
+      router.push(path);
+    }, 600); // 0.6 * 1000
   };
 
- const dockItems = [
+  const dockItems = [
     { title: "Home", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>, href: "/" },
     { title: "Notes", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>, href: "/notes" },
     { title: "Projects", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 18 2 2 4-4"/><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/><path d="m7.5 4.21 4.5 2.6 4.5-2.6"/><polyline points="7.5 19.79 7.5 14.6 3 12"/></svg>, href: "#" },
@@ -279,10 +275,8 @@ setTimeout(() => {
   ];
 
   return (
-   <main className="min-h-screen bg-black text-white p-6 md:p-12 lg:py-24 lg:px-36 pb-6 md:pb-24 relative overflow-x-hidden">
+   <main className="min-h-screen bg-black text-white px-4 pt-24 pb-6 md:pb-24 md:p-12 lg:py-24 lg:px-36 relative overflow-x-hidden">
       
-     
-
       {/* 2. EXIT CURTAIN (Conditional Speed Up from Bottom) */}
       <AnimatePresence>
         {isExiting && (
@@ -300,67 +294,117 @@ setTimeout(() => {
         )}
       </AnimatePresence>
 
-      {/* HAMBURGER MENU BUTTON (Mobile Only) */}
-      <button 
-        onClick={() => setIsSidebarOpen(true)}
-        className="md:hidden fixed top-6 right-6 z-[60] p-2 text-white hover:opacity-80 active:scale-95 transition-all"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="3" x2="21" y1="6" y2="6" />
-          <line x1="3" x2="21" y1="12" y2="12" />
-          <line x1="3" x2="21" y1="18" y2="18" />
-        </svg>
-      </button>
+      {/* ------------------------------------------------------------------ */}
+      {/* TOP BAR / LIQUID NAVIGATION (MOBILE ONLY)                          */}
+      {/* ------------------------------------------------------------------ */}
+      
+      {/* Top Blur & Vignette (Fixed h-25 equivalent) */}
+      <div 
+        className="block md:hidden fixed top-0 left-0 w-full h-24 z-[55] pointer-events-none backdrop-blur-xl" 
+        style={{
+            maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
+        }}
+      />
+      <div className="block md:hidden fixed top-0 left-0 w-full h-24 z-[55] pointer-events-none bg-gradient-to-b from-neutral-950/20 to-transparent" />
 
-      {/* SIDEBAR DRAWER (Mobile Only) */}
+      {/* Floating Notch Menu Trigger (MOBILE ONLY) */}
+      <motion.div 
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut", delay: 0.0 }} 
+        className="block md:hidden fixed top-6 left-1/2 -translate-x-1/2 z-[60] w-[65vw] max-w-[280px]"
+      >
+        <button
+            onClick={() => setIsMenuOpen(true)}
+            className="group w-full flex items-center justify-between px-6 py-3 rounded-full bg-white/5 backdrop-blur-md border border-white/10 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.2)] hover:bg-white/10 hover:border-white/20 transition-all duration-300 active:scale-95"
+        >
+            <span className="text-[11px] font-semibold text-neutral-300 tracking-wider group-hover:text-white transition-colors">Menu</span>
+            
+            <div className="flex flex-col gap-[3px] items-end">
+                <span className="w-5 h-[2px] bg-neutral-400 rounded-full group-hover:bg-white group-hover:w-6 transition-all duration-300"></span>
+                <span className="w-3 h-[2px] bg-neutral-400 rounded-full group-hover:bg-white group-hover:w-6 transition-all duration-300"></span>
+            </div>
+        </button>
+      </motion.div>
+
+      {/* "LIQUID GLASS" MENU OVERLAY (MOBILE ONLY) */}
       <AnimatePresence>
-        {isSidebarOpen && (
-          <>
+        {isMenuOpen && (
+          <div className="block md:hidden fixed inset-0 z-[70] flex flex-col items-center justify-start pt-28 px-4">
+            
             {/* Backdrop */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsSidebarOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70]"
+              onClick={() => setIsMenuOpen(false)}
+              className="absolute inset-0 bg-neutral-950/40 backdrop-blur-md"
             />
-            
-            {/* Drawer Content */}
+              
+            {/* Menu Window */}
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 20, stiffness: 100 }}
-              className="fixed top-0 right-0 h-full w-64 bg-zinc-950/90 border-l border-white/10 backdrop-blur-xl z-[80] p-6 shadow-2xl"
+              initial={{ scale: 0.95, opacity: 0, y: -20, filter: "blur(10px)" }}
+              animate={{ scale: 1, opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ scale: 0.95, opacity: 0, y: -20, filter: "blur(10px)" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-[300px] bg-white/5 backdrop-blur-3xl border border-white/20 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden"
             >
-              <div className="flex flex-col gap-6 mt-12">
-                {dockItems.map((item, idx) => (
-                   <a 
-                     key={item.title} 
-                     href={item.href}
-                     onClick={(e) => {
-                        if ((item.href === "/" || item.href === "/notes") && handleNavigation) { 
-                            e.preventDefault(); 
-                            handleNavigation(item.href); 
-                        } else {
-                            setIsSidebarOpen(false);
-                        }
-                     }}
-                     target={item.href.startsWith("http") ? "_blank" : undefined}
-                     rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                     className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 text-neutral-300 hover:text-white transition-all group"
-                   >
-                     <div className="p-2 rounded-lg bg-neutral-900 border border-white/5 group-hover:border-white/20 transition-colors">
-                       {React.cloneElement(item.icon as any, { className: "w-5 h-5" })}
-                     </div>
-                     <span className="font-medium">{item.title}</span>
-                   </a>
-                ))}
-              </div>
+               <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-50" />
+
+               <div className="p-6 relative z-10">
+                   <div className="flex justify-between items-center mb-6 px-1">
+                       <span className="text-sm font-semibold text-neutral-200 tracking-wide">Navigation</span>
+                       <button onClick={() => setIsMenuOpen(false)} className="group p-2 -mr-2 text-neutral-300 hover:text-white transition-colors">
+                           <div className="w-6 h-6 flex items-center justify-center relative">
+                                <span className="absolute w-4 h-[1.5px] bg-current rotate-45 transition-transform"></span>
+                                <span className="absolute w-4 h-[1.5px] bg-current -rotate-45 transition-transform"></span>
+                           </div>
+                       </button>
+                   </div>
+
+                   <div className="grid grid-cols-3 gap-y-6 gap-x-2">
+                    {dockItems.map((item, idx) => (
+                        <a 
+                          key={item.title} 
+                          href={item.href}
+                          onClick={(e) => {
+                            // Intercept Navigation
+                            if ((item.href === "/" || item.href === "/notes") && handleNavigation) {
+                                e.preventDefault();
+                                handleNavigation(item.href);
+                            } else {
+                                setIsMenuOpen(false);
+                            }
+                          }}
+                          target={item.href.startsWith("http") ? "_blank" : undefined}
+                          rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                          className="flex flex-col items-center justify-center gap-2 group cursor-pointer"
+                        >
+                          <div className="p-3 rounded-2xl bg-transparent group-hover:bg-white/10 transition-colors duration-300">
+                             <div className="text-neutral-300 group-hover:text-purple-300 transition-colors duration-300 drop-shadow-sm">
+                               {React.cloneElement(item.icon as any, { className: "w-6 h-6 stroke-[1.5]" })}
+                             </div>
+                          </div>
+                          <span className="text-[11px] font-medium text-neutral-400 group-hover:text-white transition-colors">{item.title}</span>
+                        </a>
+                    ))}
+                   </div>
+                   
+                   <div className="mt-8 pt-4 border-t border-white/10 flex justify-center text-center">
+                       <p className="text-[10px] text-neutral-400 font-medium">
+                           Designed by Varun Sivanesan
+                       </p>
+                   </div>
+               </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* END MOBILE ONLY SECTION                                            */}
+      {/* ------------------------------------------------------------------ */}
 
       {/* Page Header */}
       <div className="max-w-6xl mx-auto mb-10 md:mb-20 border-b border-white/10 pb-8 md:pb-10">
@@ -375,12 +419,15 @@ setTimeout(() => {
       </div>
 
       {/* Projects List */}
-      <div className="max-w-6xl mx-auto flex flex-col gap-24">
+      <div className="max-w-6xl mx-auto flex flex-col gap-12 md:gap-24">
         {PROJECTS.map((project, index) => (
           <BlurFade key={project.id} delay={0.2 + index * 0.1}>
-            <div className="group flex flex-col md:flex-row gap-8 md:gap-12 items-start">
+            {/* MOBILE: Dark card with border and padding 
+              DESKTOP (md:): No background, no border, no padding (reverts to original row layout)
+            */}
+            <div className="group flex flex-col md:flex-row gap-6 md:gap-12 items-start p-4 md:p-0 bg-zinc-900/40 md:bg-transparent border border-white/5 md:border-none rounded-3xl md:rounded-none backdrop-blur-sm md:backdrop-blur-none transition-all">
               
-              {/* 1. Image Section (Left) */}
+              {/* 1. Image Section (Left) - UNTOUCHED */}
               <div className="w-full md:w-3/5 relative">
                   <CometCard className="rounded-xl overflow-hidden aspect-video border border-white/10 transition-all duration-500">
                     <img
@@ -420,13 +467,22 @@ setTimeout(() => {
                     </span>
                   ))}
                 </div>
-                <h2 className="text-3xl font-bold text-white mb-4 tracking-tight group-hover:text-pink-500 transition-colors duration-300">
+                
+                {/* Title: Always pink on Mobile */}
+                <h2 className="text-3xl font-bold mb-4 tracking-tight transition-colors duration-300 text-pink-500 md:text-white md:group-hover:text-pink-500">
                   {project.title}
                 </h2>
+                
                 <p className="text-zinc-400 leading-relaxed mb-8 text-sm font-light">
                   {project.description}
                 </p>
-                <div className="flex items-center gap-4 mt-auto opacity-40 group-hover:opacity-100 transition-opacity duration-500">
+                
+                {/* ========================================================= */}
+                {/* BUTTONS: SEPARATED MOBILE VS DESKTOP TO PREVENT REGRESSION */}
+                {/* ========================================================= */}
+                
+                {/* DESKTOP LINKS (Original Style: Subtle text, hover pink) */}
+                <div className="hidden md:flex items-center gap-4 mt-auto opacity-40 group-hover:opacity-100 transition-opacity duration-500">
                   {project.liveLink && (
                     <Link
                       href={project.liveLink}
@@ -446,6 +502,31 @@ setTimeout(() => {
                     <Github size={14} /> View Source
                   </Link>
                 </div>
+
+                {/* MOBILE BUTTONS (New Luxurious Style) */}
+                <div className="flex md:hidden items-center gap-3 mt-2 w-full">
+                  {project.liveLink && (
+                    <Link
+                      href={project.liveLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-pink-900/40 to-purple-900/40  text-pink-200 font-semibold text-sm shadow-[0_0_15px_-5px_rgba(236,72,153,0.3)] hover:bg-pink-900/60 transition-all duration-300"
+                    >
+                      <Globe size={16} /> 
+                      <span>Live Preview</span>
+                    </Link>
+                  )}
+                  <Link
+                    href={project.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-zinc-900  text-zinc-400 font-semibold text-sm hover:bg-zinc-800 transition-all duration-300"
+                  >
+                    <Github size={16} /> 
+                    <span>View Source</span>
+                  </Link>
+                </div>
+
               </div>
 
             </div>

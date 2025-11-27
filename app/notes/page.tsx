@@ -461,11 +461,11 @@ const NotesPageMobile = () => {
   const [isExiting, setIsExiting] = useState(false);
   const [exitDuration, setExitDuration] = useState(0.6); // Default Speed
   const [selectedNote, setSelectedNote] = useState<typeof NOTES_DATA[0] | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Unified Handler with Dynamic Speed
   const handleNavigation = (path: string) => {
-    setIsSidebarOpen(false); 
+    setIsMenuOpen(false); 
 
     // If navigating to Projects, do NOT trigger curtain, just navigate instantly
     if (path === "/projects") {
@@ -499,7 +499,7 @@ const NotesPageMobile = () => {
   ];
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 pb-8 relative">
+    <main className="min-h-screen bg-black text-white px-6 pb-8 pt-24 relative">
       
       {/* 2. EXIT CURTAIN (Conditional Speed Up from Bottom) */}
       <AnimatePresence>
@@ -518,66 +518,118 @@ const NotesPageMobile = () => {
         )}
       </AnimatePresence>
 
-      {/* HAMBURGER MENU BUTTON */}
-      <button 
-        onClick={() => setIsSidebarOpen(true)}
-        className="fixed top-6 right-6 z-[60] p-2 text-white hover:opacity-80 active:scale-95 transition-all"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="3" x2="21" y1="6" y2="6" />
-          <line x1="3" x2="21" y1="12" y2="12" />
-          <line x1="3" x2="21" y1="18" y2="18" />
-        </svg>
-      </button>
+      {/* ------------------------------------------------------------------ */}
+      {/* TOP BAR / LIQUID NAVIGATION (Ported from Home) */}
+      {/* ------------------------------------------------------------------ */}
+      
+      {/* Top Blur & Vignette */}
+      <div 
+        className="fixed top-0 left-0 w-full h-25 z-[55] pointer-events-none backdrop-blur-xl" 
+        style={{
+            maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
+        }}
+      />
+      <div className="fixed top-0 left-0 w-full h-25 z-[55] pointer-events-none bg-gradient-to-b from-neutral-950/20 to-transparent" />
 
-      {/* SIDEBAR DRAWER */}
+      {/* Floating Notch Menu Trigger */}
+      <motion.div 
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut", delay: 0.07 }} 
+        className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] w-[65vw] max-w-[280px]"
+      >
+        <button
+            onClick={() => setIsMenuOpen(true)}
+            className="group w-full flex items-center justify-between px-6 py-3 rounded-full bg-white/5 backdrop-blur-md border border-white/10 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.2)] hover:bg-white/10 hover:border-white/20 transition-all duration-300 active:scale-95"
+        >
+            <span className="text-[11px] font-semibold text-neutral-300 tracking-wider group-hover:text-white transition-colors">Menu</span>
+            
+            <div className="flex flex-col gap-[3px] items-end">
+                <span className="w-5 h-[2px] bg-neutral-400 rounded-full group-hover:bg-white group-hover:w-6 transition-all duration-300"></span>
+                <span className="w-3 h-[2px] bg-neutral-400 rounded-full group-hover:bg-white group-hover:w-6 transition-all duration-300"></span>
+            </div>
+        </button>
+      </motion.div>
+
+      {/* "LIQUID GLASS" MENU OVERLAY */}
       <AnimatePresence>
-        {isSidebarOpen && (
-          <>
+        {isMenuOpen && (
+          <div className="fixed inset-0 z-[70] flex flex-col items-center justify-start pt-28 px-4">
+            
+            {/* Backdrop */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsSidebarOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70]"
+              onClick={() => setIsMenuOpen(false)}
+              className="absolute inset-0 bg-neutral-950/40 backdrop-blur-md"
             />
-            
+              
+            {/* Menu Window */}
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 20, stiffness: 100 }}
-              className="fixed top-0 right-0 h-full w-64 bg-zinc-950/90 border-l border-white/10 backdrop-blur-xl z-[80] p-6 shadow-2xl"
+              initial={{ scale: 0.95, opacity: 0, y: -20, filter: "blur(10px)" }}
+              animate={{ scale: 1, opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ scale: 0.95, opacity: 0, y: -20, filter: "blur(10px)" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-[300px] bg-white/5 backdrop-blur-3xl border border-white/20 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden"
             >
-              <div className="flex flex-col gap-6 mt-12">
-                {dockItems.map((item, idx) => (
-                   <a 
-                     key={item.title} 
-                     href={item.href}
-                     onClick={(e) => {
-                        // Intercept navigation
-                        if ((item.href === "/" || item.href === "/projects") && handleNavigation) { 
-                            e.preventDefault(); 
-                            handleNavigation(item.href); 
-                        } else {
-                            setIsSidebarOpen(false);
-                        }
-                     }}
-                     target={item.href.startsWith("http") ? "_blank" : undefined}
-                     rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                     className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 text-neutral-300 hover:text-white transition-all group"
-                   >
-                     <div className="p-2 rounded-lg bg-neutral-900 border border-white/5 group-hover:border-white/20 transition-colors">
-                       {React.cloneElement(item.icon as any, { className: "w-5 h-5" })}
-                     </div>
-                     <span className="font-medium">{item.title}</span>
-                   </a>
-                ))}
-              </div>
+               <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-50" />
+
+               <div className="p-6 relative z-10">
+                   <div className="flex justify-between items-center mb-6 px-1">
+                       <span className="text-sm font-semibold text-neutral-200 tracking-wide">Navigation</span>
+                       <button onClick={() => setIsMenuOpen(false)} className="group p-2 -mr-2 text-neutral-300 hover:text-white transition-colors">
+                           <div className="w-6 h-6 flex items-center justify-center relative">
+                                <span className="absolute w-4 h-[1.5px] bg-current rotate-45 transition-transform"></span>
+                                <span className="absolute w-4 h-[1.5px] bg-current -rotate-45 transition-transform"></span>
+                           </div>
+                       </button>
+                   </div>
+
+                   <div className="grid grid-cols-3 gap-y-6 gap-x-2">
+                    {dockItems.map((item, idx) => (
+                        <a 
+                          key={item.title} 
+                          href={item.href}
+                          onClick={(e) => {
+                            // Intercept Navigation
+                            if ((item.href === "/" || item.href === "/projects") && handleNavigation) {
+                                e.preventDefault();
+                                handleNavigation(item.href);
+                            } else {
+                                setIsMenuOpen(false);
+                            }
+                          }}
+                          target={item.href.startsWith("http") ? "_blank" : undefined}
+                          rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                          className="flex flex-col items-center justify-center gap-2 group cursor-pointer"
+                        >
+                          <div className="p-3 rounded-2xl bg-transparent group-hover:bg-white/10 transition-colors duration-300">
+                             <div className="text-neutral-300 group-hover:text-purple-300 transition-colors duration-300 drop-shadow-sm">
+                               {React.cloneElement(item.icon as any, { className: "w-6 h-6 stroke-[1.5]" })}
+                             </div>
+                          </div>
+                          <span className="text-[11px] font-medium text-neutral-400 group-hover:text-white transition-colors">{item.title}</span>
+                        </a>
+                    ))}
+                   </div>
+                   
+                   <div className="mt-8 pt-4 border-t border-white/10 flex justify-center text-center">
+                       <p className="text-[10px] text-neutral-400 font-medium">
+                           Designed by Varun Sivanesan
+                       </p>
+                   </div>
+               </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* END TOP BAR */}
+      {/* ------------------------------------------------------------------ */}
+
 
       {/* Page Header */}
       <div className="mb-8 border-b border-white/10 pb-6">
