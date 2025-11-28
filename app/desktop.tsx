@@ -932,7 +932,7 @@ const ShootingStarsPageDesktop = () => {
                 {/* 4. Philosophy */}
                 <BlurFade delay={0.5}>
                     <p className="text-base md:text-lg text-neutral-400 leading-relaxed">
-                        I like to do things only when they can be done perfectly which helps me build a strong set of fundamentals regarding everything we interact with.
+                      Winning is the most natural thing to me. I never feel like i can lose even when there seems to be no other way. I only play games that i will win and want to win.
                     </p>
                 </BlurFade>
             </div>

@@ -350,7 +350,7 @@ const ShootingStarsPageMobile = () => {
                                 I live in <span className="text-white font-medium">Delhi/Jaipur</span>. My hobbies include <span className="text-white">Technology</span>, <span className="text-white">Physics</span>, <span className="text-white">Linguistics</span>, <span className="text-white">Table Tennis</span>, <span className="text-white">Kdramas</span> and <span className="text-white">League of Legends</span>.
                             </p>
                             <p className="text-center text-neutral-400 italic">
-                                "I like to do things, only when they can be done perfectly to build strong fundamentals."
+                                "Winning is my thing because i only play games i can & want to win"
                             </p>
                         </div>
                     </div>
