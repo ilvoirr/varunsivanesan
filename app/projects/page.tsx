@@ -159,6 +159,16 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    id: 0,
+    title: "QOTD-le (UI UPDATED) ",
+    description: "A gamified Data Structures & Algorithms trainer modeled after Wordle, featuring a dopamine-stimulating UI with streak multipliers, confetti bursts, adaptive difficulty, and shareable progress grids to drive addiction-like daily engagement and mastery for competitive exams like GATE",
+    image: "/proj0.png",
+    tech: ["Next.js", "LottieJSON", "Image from Older Version"],
+    liveLink: "https://qotdle-varunsivanesan.vercel.app/",
+    githubLink: "https://github.com/ilvoirr/qotdle-varunsivanesan",
+  },
+  
+  {
     id: 1,
     title: "BachatBox",
     description: "ACM Hacks 10.0 Prototype. An intelligent personal finance platform built to empower users with automated expense tracking from SMS messages and receipts, personalized AI-driven financial advice, and powerful data visualizations.",
@@ -270,9 +280,12 @@ export default function ProjectsPage() {
     { title: "LinkedIn", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>, href: "https://www.linkedin.com/in/varun-sivanesan-397928205/" },
     { title: "Twitter", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg>, href: "https://x.com/varunnetworks" },
     { title: "Instagram", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>, href: "https://www.instagram.com/ilvoirr/" },
+    { title: "Letterboxd", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="7.5" cy="12" r="4"/><circle cx="12" cy="12" r="4"/><circle cx="16.5" cy="12" r="4"/></svg>, href: "https://letterboxd.com/ilvoirr/const" },
     { title: "Gmail", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>, href: "mailto:contactvarun04@gmail.com" },
     { title: "Call", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>, href: "tel:7827919494" },
   ];
+
+
 
   return (
    <main className="min-h-screen bg-black text-white px-4 pt-24 pb-6 md:pb-24 md:p-12 lg:py-24 lg:px-36 relative overflow-x-hidden">
