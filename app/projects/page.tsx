@@ -160,6 +160,15 @@ interface Project {
 const PROJECTS: Project[] = [
   {
     id: 0,
+    title: "Social Media Claim Checker",
+    description: "Multi-Agent Parliament driven fact-checking for social feeds. Verify claims with RAG-powered evidence.",
+    image: "/proj00.png",
+    tech: ["Multi-Agent Parliament", "LangChain", "Next.js"],
+    liveLink: "https://socialmedia-claimchecker.vercel.app/",
+    githubLink: "https://github.com/ilvoirr/socialmedia-claimchecker",
+  },
+  {
+    id: 1,
     title: "QOTD-le (UI UPDATED) ",
     description: "A gamified Data Structures & Algorithms trainer modeled after Wordle, featuring a dopamine-stimulating UI with streak multipliers, confetti bursts, adaptive difficulty, and shareable progress grids to drive addiction-like daily engagement and mastery for competitive exams like GATE",
     image: "/proj0.png",
@@ -167,9 +176,8 @@ const PROJECTS: Project[] = [
     liveLink: "https://qotdle-varunsivanesan.vercel.app/",
     githubLink: "https://github.com/ilvoirr/qotdle-varunsivanesan",
   },
-  
   {
-    id: 1,
+    id: 2,
     title: "BachatBox",
     description: "ACM Hacks 10.0 Prototype. An intelligent personal finance platform built to empower users with automated expense tracking from SMS messages and receipts, personalized AI-driven financial advice, and powerful data visualizations.",
     image: "/proj1.png",
@@ -178,7 +186,7 @@ const PROJECTS: Project[] = [
     githubLink: "https://github.com/ilvoirr/bachatbox",
   },
   {
-    id: 2,
+    id: 3,
     title: "SERP Engine",
     description: "Innovate Hackathon Prototype. A fully functional custom SERP Engine that scrapes web results live and structures them on the frontend, utilizing a Local LLM to generate concise summaries of the search results.",
     image: "/proj2.png",
@@ -187,7 +195,7 @@ const PROJECTS: Project[] = [
     githubLink: "https://github.com/ilvoirr/serp-engine",
   },
   {
-    id: 3,
+    id: 4,
     title: "BioLuminescence",
     description: "Smart India Hackathon '25 Prototype. An AI-powered microscope image analysis application designed to detect and identify biological species in microscopy images using advanced deep learning models.",
     image: "/proj3.png",
@@ -195,7 +203,7 @@ const PROJECTS: Project[] = [
     githubLink: "https://github.com/ilvoirr/bioluminescence",
   },
   {
-    id: 4,
+    id: 5,
     title: "Diet Tracker Dashboard",
     description: "A significantly improved statistical dashboard for a casual diet weight tracker. Reconstructed the UI to fix usability issues and added better data visualization for tracking progress.",
     image: "/proj4.png",
@@ -204,7 +212,7 @@ const PROJECTS: Project[] = [
     githubLink: "https://github.com/ilvoirr/diet-tracker",
   },
   {
-    id: 5,
+    id: 6,
     title: "Voice Assistant Template",
     description: "A quick, clean UI template for voice assistant interfaces. Designed with no component or docker dependencies for easy modification. Includes one page.tsx and 3 plug-and-play API routes.",
     image: "/proj5.png",
@@ -213,7 +221,7 @@ const PROJECTS: Project[] = [
     githubLink: "https://github.com/ilvoirr/varun-voice-assistant-template",
   },
   {
-    id: 6,
+    id: 7,
     title: "Master Agent UI",
     description: "CSC Hackathon Prototype. A Master Agent UI Interface that converses with multiple worker agents to provide an immaculate, automated banker experience for customers.",
     image: "/proj6.png",
@@ -222,7 +230,7 @@ const PROJECTS: Project[] = [
     githubLink: "https://github.com/ilvoirr/csc-hackathon-prototype",
   },
   {
-    id: 7,
+    id: 8,
     title: "Code Progress Bar",
     description: "A modern web application that helps developers measure their code's alignment with specific goals. Provides real-time feedback and interactive visualizations to track coding practice improvements.",
     image: "/proj7.png",
