@@ -161,7 +161,7 @@ const PROJECTS: Project[] = [
   {
     id: 0,
     title: "Social Media Claim Checker",
-    description: "Multi-Agent Parliament driven fact-checking for social feeds. Verify claims with RAG-powered evidence.",
+    description: "An advanced multi-agent 'parliament' system built with LangGraph that automates social media fact-checking. The pipeline orchestrates specialized agents—Scrapers, Claim Extractors, and Researchers—that communicate to verify viral posts in real-time. By utilizing RAG-powered evidence retrieval and web scraping, the agents cross-reference claims against authoritative databases. A final 'Parliament' layer allows agents to debate contradictions and deliver a weighted veracity verdict (True/False/Misleading) with detailed AI-generated justifications and confidence scores, serving as a high-fidelity copilot for fighting digital misinformation.",
     image: "/proj00.png",
     tech: ["Multi-Agent Parliament", "LangChain", "Next.js"],
     liveLink: "https://socialmedia-claimchecker.vercel.app/",
